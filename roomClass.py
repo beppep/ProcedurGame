@@ -1,13 +1,19 @@
 import pygame
+import random
 class Room():
     def __init__ (self,width,height):
         self.seed = 10234789
         self.grid = []
         self.blockWidth = 32
+        """
         for i in range(height):
             self.grid.append([i == (height - 1)]*width)
+        """
         self.width = width*self.blockWidth
         self.height = height*self.blockWidth
+        self.rows = height
+        self.cols = width
+        self.generateSand()
     
     def checkFree(self,rectangle,xdisp = 0,ydisp = 0):
         startRow = max(int(rectangle[1] + ydisp)//self.blockWidth,0)
@@ -37,3 +43,20 @@ class Room():
                 color = (200,200,200) if gridRow[col] else (255,255,255)
                 pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                 #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
+
+
+    def generateSand(self):
+        lo = 6
+        hi = 10
+        sandHeight = 8
+        for row in range(self.rows):
+            self.grid.append([0]*self.cols)
+        for x in range(self.cols):
+            if random.random()<0.1:
+                downchance = (sandHeight-lo)/(hi-lo)
+                if random.random() < downchance:
+                    sandHeight-=1
+                else:
+                    sandHeight+=1
+            for y in range(self.rows):
+                self.grid[y][x] = 1*(self.rows-1-y<sandHeight)
