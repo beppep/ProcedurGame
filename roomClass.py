@@ -6,9 +6,26 @@ class Room():
         self.blockWidth = 32
         for i in range(height):
             self.grid.append([i == (height - 1)]*width)
+        self.width = width*self.blockWidth
+        self.height = height*self.blockWidth
     
-    def checkFree(rectangle,xdisp = 0,ydisp = 0):
-        return ":)"
+    def checkFree(self,rectangle,xdisp = 0,ydisp = 0):
+        startRow = max(int(rectangle[1] + ydisp)//self.blockWidth,0)
+        endRow = min(int(rectangle[1] + rectangle[3]-1 + ydisp)//self.blockWidth + 1 ,len(self.grid))
+        startCol = max(int(rectangle[0] + xdisp)//self.blockWidth,0)
+        endCol = min(int(rectangle[0] + rectangle[2]-1 + xdisp)//self.blockWidth + 1 ,len(self.grid[0]))
+        for i in range(startRow,endRow):
+            for j in range(startCol,endCol):
+                if self.grid[i][j]:
+                    return False 
+        return True
+    
+    def click(self,x,y):
+        row = int(y//self.blockWidth)
+        col = int(x//self.blockWidth)
+        if row < 0 or row >= len(self.grid) or col < 0 or col >= len(self.grid[0]):
+            return
+        self.grid[row][col] = not self.grid[row][col]
     
     def draw(self,display,cameraX,cameraY,cameraWidth,cameraHeight):
         startRow = cameraY//self.blockWidth 
