@@ -33,19 +33,20 @@ while jumpOut == False:
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
                 room.click(pos[0]+camera[0],pos[1]+ camera[1])
-    '''if pressed[pygame.K_w]:
-        camera[1] -= 2
+    camera = [player.x-screenWidth/2,player.y-screenHeight/2] 
+    if pressed[pygame.K_w]:
+        camera[1] -= 50
     if pressed[pygame.K_s]:
-        camera[1] += 2
+        camera[1] += 50
     if pressed[pygame.K_a]:
-        camera[0] -= 2
+        camera[0] -= 50
     if pressed[pygame.K_d]:
-        camera[0] += 2'''
-    camera[0] = max(0,min(player.x-screenWidth/2,room.width-screenWidth))
-    camera[1] = max(0,min(player.y-screenHeight/2,room.height-screenHeight))
+        camera[0] += 50
+    camera[0] = max(0,min(camera[0],room.width-screenWidth))
+    camera[1] = max(0,min(camera[1],room.height-screenHeight))
     
     player.update(pressed,room)
-    gameDisplay.fill((100,100,200))
+    gameDisplay.fill((180,200,250))
     room.draw(gameDisplay,camera[0],camera[1],1000,600)
     player.draw(gameDisplay,camera[0],camera[1])
     #world.drawMap(gameDisplay)
