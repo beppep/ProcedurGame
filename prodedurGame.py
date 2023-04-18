@@ -4,6 +4,7 @@ import pygame
 import os
 from roomClass import Room
 from playerClass import Player
+from worldClass import World
 clock = pygame.time.Clock()
 
 
@@ -14,7 +15,7 @@ pygame.display.set_caption("Yo Game")
 room = Room(100,20)
 
 player = Player()
-
+world = World(100,100)
 pressed = pygame.key.get_pressed()
 jumpOut = False
 camera = [0,0]
@@ -24,6 +25,10 @@ while jumpOut == False:
             jumpOut = True
         if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
             pressed = pygame.key.get_pressed()
+            if event.key == pygame.K_r:
+                world = World(100,100)
+
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
@@ -43,6 +48,8 @@ while jumpOut == False:
     gameDisplay.fill((100,100,200))
     room.draw(gameDisplay,camera[0],camera[1],1000,600)
     player.draw(gameDisplay,camera[0],camera[1])
+    #world.drawMap(gameDisplay)
+    gameDisplay.blit(world.surf,(0,0))
     pygame.display.update()
     clock.tick(60)
     

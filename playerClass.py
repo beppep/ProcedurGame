@@ -56,7 +56,6 @@ class Player:
                 for i in range(int(abs(self.xv*1.5))):
                     if room.checkFree(self.mask,self.x+sign,self.y + self.yv):
                         self.x += sign
-                        print("i:"+str(i)+" x:"+str(self.x))
                     else:
                         break
                 self.xv = 0
