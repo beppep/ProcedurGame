@@ -30,7 +30,7 @@ class Player:
 
         if room.checkFree(self.mask,self.x,self.y+1):
             self.yv += 0.6
-        elif pressed[pygame.K_UP]:
+        elif pressed[pygame.K_UP] and self.yv >= 0:
             self.yv = -15
         
         self.yv *= 0.98

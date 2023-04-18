@@ -28,8 +28,8 @@ class Room():
         self.grid[row][col] = not self.grid[row][col]
     
     def draw(self,display,cameraX,cameraY,cameraWidth,cameraHeight):
-        startRow = cameraY//self.blockWidth 
-        startCol = cameraX//self.blockWidth 
+        startRow = int(cameraY)//self.blockWidth 
+        startCol = int(cameraX)//self.blockWidth 
 
         for row in range(max(0,startRow),min(startRow+cameraHeight//self.blockWidth + 2,len(self.grid))):
             gridRow = self.grid[row]
