@@ -85,7 +85,7 @@ class Room():
         self.height = height*self.blockWidth
         self.rows = height
         self.cols = width
-        self.generateSand()
+        self.generateCliffs()
 
         self.bgHeights = None
         self.bgZones = None
@@ -215,6 +215,18 @@ class Room():
                     grassHeight+=1
             for y in range(self.rows):
                 self.grid[y][x] = 1*(self.rows-1-y<grassHeight)
+
+    def generateCliffs(self):
+        lo = 6
+        hi = 16
+        groundHeight = 10
+        for row in range(self.rows):
+            self.grid.append([0]*self.cols)
+        for x in range(self.cols):
+            if random.random()<0.5:
+                groundHeight += random.randint(max(lo-groundHeight, -4),0) + random.randint(0,min(hi-groundHeight, 4))
+            for y in range(self.rows):
+                self.grid[y][x] = 1*(self.rows-1-y<groundHeight)
 
     def updateBackground(self,world,row,col):
         cellZones = []
