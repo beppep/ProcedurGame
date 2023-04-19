@@ -1,4 +1,5 @@
 import pygame
+import random
 from roomClass import Room
 class Player:
     def __init__(self):
@@ -9,6 +10,11 @@ class Player:
         self.mask = pygame.Rect(-16,-32,32,64)
         self.moveDir = 0
         self.turnDir = 1
+        self.xSpeed = 0.5 + 0.5*random.random()
+        self.xFriction = 0.9 + 0.05*random.random()
+        self.gravity = 0.3+0.5*random.random()
+        self.jumpspeed = (self.gravity)**0.5 * 16
+        #self.yFriction = 0.95 + 0.05*random.random() pls no
         self.prevPressed = []
         self.image = pygame.image.load("res/hej.png")
         self.image.set_colorkey((255,0,255))
@@ -25,15 +31,15 @@ class Player:
             if not pressed[pygame.K_RIGHT] and not pressed[pygame.K_LEFT]:
                 self.moveDir = 0
         self.prevPressed = pressed
-        self.xv += self.moveDir
-        self.xv *= 0.9
+        self.xv += self.moveDir*self.xSpeed
+        self.xv *= self.xFriction
 
         if room.checkFree(self.mask,self.x,self.y+1):
-            self.yv += 0.6
+            self.yv += self.gravity
         elif pressed[pygame.K_UP] and self.yv >= 0:
-            self.yv = -15
+            self.yv = -self.jumpspeed
         
-        self.yv *= 0.98
+        #self.yv *= self.yFriction pls no
 
         #Kollar kollisioner i x och y led.
         #Om det finns en kollision, stega pixelvis tills vi når fram till hindret, sätt hastighet till 0
