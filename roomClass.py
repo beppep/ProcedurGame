@@ -159,10 +159,14 @@ class Room():
                     camCenterHeight = 0
                     drawX = j*w+setX
                     drawY = cameraHeight/2-(cameraY+100*(height-self.heightAboveWater-camCenterHeight) + imageDisp)/(ind+2)
-                    if self.bgZones[ind][heightInd] != World.water:
-                        display.blit(image,(drawX,drawY))
-                    else:
+                    
+                    if self.bgZones[ind][heightInd] == World.water:
                         pygame.draw.rect(display,(10,10,200),(drawX,drawY,800/(ind+2),800/(ind+2)),0)
+                    elif self.bgZones[ind][heightInd] == World.cliffs:
+                        pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
+                    else:
+                        display.blit(image,(drawX,drawY))
+                        
 
         startRow = int(cameraY)//self.blockWidth 
         startCol = int(cameraX)//self.blockWidth 
@@ -213,7 +217,8 @@ class Room():
     def updateBackground(self,world:World,row,col):
         cellZones = []
         cellHeights = []
-
+        
+        self.heightAboveWater = world.heightGrid[row][col]
 
         for i in range(row):
             cellZones.append([0]*(2*i+3))
@@ -234,7 +239,7 @@ class Room():
                         assert(False)
         self.bgHeights = cellHeights
         self.bgZones = cellZones
-        self.heightAboveWater = world.heightGrid[row][col]
+        
 
         print(len(self.bgHeights))
 
