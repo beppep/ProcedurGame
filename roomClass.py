@@ -90,6 +90,7 @@ class Room():
         self.bgHeights = None
         self.bgZones = None
         self.heightAboveWater = 1
+        self.zone = 1
 
     
     def checkFree(self,rectangle,xdisp = 0,ydisp = 0):
@@ -168,7 +169,8 @@ class Room():
                     #    pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
                     else:
                         display.blit(image,(drawX,drawY))
-                        
+        color =(min(255,Constants.colors[self.zone][0]+30),min(255,Constants.colors[self.zone][1]+30),min(255,Constants.colors[self.zone][2]+30))
+        pygame.draw.rect(display,color,(0,self.height-100-cameraY,cameraWidth,cameraHeight),0)             
 
         startRow = int(cameraY)//self.blockWidth 
         startCol = int(cameraX)//self.blockWidth 
@@ -177,16 +179,16 @@ class Room():
             gridRow = self.grid[row]
             for col in range(max(0,startCol),min(startCol+cameraWidth//self.blockWidth + 2,len(self.grid[0]))):
                 if gridRow[col]:
-                    color = Constants.colors[Constants.beach]
+                    color = Constants.colors[self.zone]
                     pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                     #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
 
 
 
     def generateSand(self):
-        lo = 3
-        hi = 7
-        sandHeight = 5
+        lo = 2
+        hi = 4
+        sandHeight = 3
         for row in range(self.rows):
             self.grid.append([0]*self.cols)
         for x in range(self.cols):
@@ -233,6 +235,7 @@ class Room():
         cellHeights = []
         
         self.heightAboveWater = world.heightGrid[row][col]
+        self.zone = world.zoneGrid[row][col]
 
         for i in range(row):
             cellZones.append([0]*(2*i+3))
