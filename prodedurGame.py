@@ -15,7 +15,7 @@ pygame.display.set_caption("Yo Game")
 room = Room(100,20)
 
 player = Player()
-world = World(100,100)
+world = World(20,20)
 pressed = pygame.key.get_pressed()
 jumpOut = False
 camera = [0,0]
@@ -26,7 +26,7 @@ while jumpOut == False:
         if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
             pressed = pygame.key.get_pressed()
             if event.key == pygame.K_r:
-                world = World(100,100)
+                world = World(20,20)
 
 
         if event.type == pygame.MOUSEBUTTONDOWN:
