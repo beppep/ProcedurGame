@@ -38,6 +38,7 @@ class World:
                 
                 self.heightGrid[i][j] = self.rand.gauss(0,stddev)
                 self.heightGrid[i][j] += min(120*(1/6 - (i/height - 1/2)**2 - (j/width - 1/2)**2),stddev*ratio)
+                
         
         kerWidth = 3
         kerHeight = 3
@@ -55,6 +56,7 @@ class World:
 
         for i in range(self.height):
             for j in range(self.width):
+                self.heightGrid[i][j] = max(0,self.heightGrid[i][j])
                 if self.heightGrid[i][j] <= 0:
                     self.zoneGrid[i][j] = World.water
                 elif self.heightGrid[i][j] <= stddev/2:
@@ -64,15 +66,18 @@ class World:
                     elif count < 3 or (count == 3 and self.rand.randint(0,1)):
                         self.zoneGrid[i][j] = World.beach
                     else:
-                        self.zoneGrid[i][j] = World.cliffs  
+                        self.zoneGrid[i][j] = World.cliffs
+                        self.heightGrid[i][j] += 2  
                 elif self.heightGrid[i][j] <= stddev*2/3:
                     count = self.countWater(i,j)
                     if count == 0:
                         self.zoneGrid[i][j] = World.woods
                     else:
                         self.zoneGrid[i][j] = World.cliffs
+                        self.heightGrid[i][j] += 4
                 else:
                     self.zoneGrid[i][j] = World.cliffs
+                    self.heightGrid[i][j] += 4
 
         self.surf = pygame.Surface((width*5*2,height*5))
         for i in range(self.height):
@@ -94,6 +99,16 @@ class World:
             elif self.heightGrid[pos[0]][pos[1]] <= 0:
                 count += 1
         return count
+    
+    def tryMovePlayer(self,dx,dy):
+        newRow = self.playerCoords[1] + dy
+        newCol = self.playerCoords[0] + dx
+        if newRow < 0 or newCol < 0 or newRow >= self.height or newCol >= self.width:
+            return False
+        if self.zoneGrid[newRow][newCol] == World.water:
+            return False
+        self.playerCoords=(newCol,newRow)
+        return True
 
     def draw(self,display):
         display.blit(self.surf,(0,0))

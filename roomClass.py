@@ -1,14 +1,75 @@
 import pygame
 import random
+
+from betterWorldClass import World
 class Room():
+
+
+    #Init some background stuff. Images in different sizes
+    backStartInd = -1 # Found out through trial and error
+    backGroupWidth = 4 # images at indices -1 ,0 ,1, 2 represent landscape of cell directly north of room
+    #(Indices here refers to inds computed in the draw method (j))
+    #Only applies if images are approximately 400 pixels wide
+    #TODO(?) make these values dependent on image width. (may need one value per image :( )
+
+
 
     hillImages = []
     hillImages.append(pygame.image.load("res/hill.png"))
     hillImages[0].set_colorkey((255,0,255))
+    w = hillImages[0].get_width()
+    h = hillImages[0].get_height()
+
     for i in range (3,11):
-        surf = pygame.transform.scale(hillImages[0],(800/i,800/i))
+        surf = pygame.transform.scale(hillImages[0],(2*w/i,2*h/i))
         surf.set_colorkey((255,0,255))
         hillImages.append(surf)
+
+    woodsImages = []
+    woodsImages.append(pygame.image.load("res/woods.png"))
+    woodsImages[0].set_colorkey((255,0,255))
+    w = woodsImages[0].get_width()
+    h = woodsImages[0].get_height()
+
+    for i in range (3,11):
+        surf = pygame.transform.scale(woodsImages[0],(2*w/i,2*h/i))
+        surf.set_colorkey((255,0,255))
+        woodsImages.append(surf)
+
+    cliffsImages = []
+    cliffsImages.append(pygame.image.load("res/cliffs.png"))
+    cliffsImages[0].set_colorkey((255,0,255))
+    w = cliffsImages[0].get_width()
+    h = cliffsImages[0].get_height()
+
+    for i in range (3,11):
+        surf = pygame.transform.scale(cliffsImages[0],(2*w/i,2*h/i))
+        surf.set_colorkey((255,0,255))
+        cliffsImages.append(surf)
+
+    beachImages = []
+    beachImages.append(pygame.image.load("res/beach.png"))
+    beachImages[0].set_colorkey((255,0,255))
+    w = beachImages[0].get_width()
+    h = beachImages[0].get_height()
+
+    for i in range (3,11):
+        surf = pygame.transform.scale(beachImages[0],(2*w/i,2*h/i))
+        surf.set_colorkey((255,0,255))
+        beachImages.append(surf)
+
+    waterImages = []
+    waterImages.append(pygame.image.load("res/water.png"))
+    waterImages[0].set_colorkey((255,0,255))
+    w = waterImages[0].get_width()
+    h = waterImages[0].get_height()
+
+    for i in range (3,11):
+        surf = pygame.transform.scale(waterImages[0],(2*w/i,2*h/i))
+        surf.set_colorkey((255,0,255))
+        waterImages.append(surf)
+
+    
         
     
     def __init__ (self,width,height):
@@ -24,6 +85,10 @@ class Room():
         self.rows = height
         self.cols = width
         self.generateSand()
+
+        self.bgHeights = None
+        self.bgZones = None
+        self.heightAboveWater = 1
 
     
     def checkFree(self,rectangle,xdisp = 0,ydisp = 0):
@@ -44,21 +109,60 @@ class Room():
             return
         self.grid[row][col] = not self.grid[row][col]
     
-    def draw(self,display,cameraX,cameraY,cameraWidth,cameraHeight):
+    def draw(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight):
         #Draw ocean/horizon
         pygame.draw.rect(display, (10,10,200),(0,cameraHeight/2,cameraWidth,cameraHeight),0)
 
-        for i in range(len(Room.hillImages)-1):
-            ind = len(Room.hillImages)-1-i
-            surf = Room.hillImages[ind]
-            w = surf.get_width()
-            offSet = (1037*i) % 159
-            setX = cameraWidth/2-cameraX/(ind+2) + offSet
-            startInd = -int(setX//w) - 1
-            endInd = startInd + int(cameraWidth//w) + 2
-            
-            for j in range(startInd,endInd):
-                display.blit(Room.hillImages[ind],(j*w+setX,cameraHeight/2-cameraY/(ind+2)))
+        if self.bgHeights != None:
+            for i in range(min(len(Room.hillImages),len(self.bgHeights))):
+                ind = min(len(Room.hillImages),len(self.bgHeights))-1-i
+                surf = Room.hillImages[ind]
+                w = surf.get_width()
+                offSet = (1037*i) % 159 #Gives kinda random look
+                setX = cameraWidth/2-cameraX/(ind+2) + offSet
+                startInd = -int(setX//w) - 1
+                endInd = startInd + int(cameraWidth//w) + 2
+                devJs = []
+                for j in range(startInd,endInd):
+                    heightInd = (Room.backGroupWidth*(ind+1) + j-Room.backStartInd)//Room.backGroupWidth
+                    devJs.append(j)
+                    try:
+                        height = self.bgHeights[ind][heightInd]
+                    except:
+                        print("ind: "+str(ind))
+                        print("j: "+str(j))
+                        print("heightInd: "+str(heightInd))
+                        
+                        print("len1: "+str(len(self.bgHeights)))
+                        if len(self.bgHeights) > ind:
+                            print("len2: "+str(len(self.bgHeights[ind])))
+                        print(devJs)
+
+                    #TODO Should potentially add extra height term for camera height above ground
+                    # in in-game units.
+                    imageDisp = 0
+                    if self.bgZones[ind][heightInd] == World.water:
+                        image = Room.waterImages[ind]
+                        #imageDisp = -0.4
+                    elif self.bgZones[ind][heightInd] == World.beach:
+                        image = Room.beachImages[ind]
+                        #imageDisp = 0
+                    elif self.bgZones[ind][heightInd] == World.plains:
+                        image = Room.hillImages[ind]
+                        imageDisp = 70
+                    elif self.bgZones[ind][heightInd] == World.woods:
+                        image = Room.woodsImages[ind]
+                        imageDisp = 100
+                    elif self.bgZones[ind][heightInd] == World.cliffs:
+                        image = Room.cliffsImages[ind]
+                        imageDisp = 100
+                    camCenterHeight = 0
+                    drawX = j*w+setX
+                    drawY = cameraHeight/2-(cameraY+100*(height-self.heightAboveWater-camCenterHeight) + imageDisp)/(ind+2)
+                    if self.bgZones[ind][heightInd] != World.water:
+                        display.blit(image,(drawX,drawY))
+                    else:
+                        pygame.draw.rect(display,(10,10,200),(drawX,drawY,800/(ind+2),800/(ind+2)),0)
 
         startRow = int(cameraY)//self.blockWidth 
         startCol = int(cameraX)//self.blockWidth 
@@ -87,14 +191,37 @@ class Room():
             for y in range(self.rows):
                 self.grid[y][x] = 1*(self.rows-1-y<sandHeight)
 
-    def updateBackground(self,world,row,col):
-        visibleCells = []
+    def updateBackground(self,world:World,row,col):
+        cellZones = []
         cellHeights = []
 
 
         for i in range(row):
-            visibleCells.append([0]*(2*i+1))
-            cellHeights.append([0]*(2*i+1))
+            cellZones.append([0]*(2*i+3))
+            cellHeights.append([0]*(2*i+3))
+            for j in range(len(cellHeights[i])):
+                if col + j - i - 1 < 0 or col + j - i - 1 >= world.width:
+                    cellHeights[i][j] = 0
+                    cellZones[i][j] = World.water
+                else:
+                    try:
+                        cellHeights[i][j] = world.heightGrid[row-i-1][col+j-i-1]
+                        cellZones[i][j] = world.zoneGrid[row-i-1][col+j-i-1]
+                    except:
+                        print("i:"+str(i))
+                        print("j:"+str(j))
+                        print("row:"+str(row))
+                        print("col:"+str(col))
+                        assert(False)
+        self.bgHeights = cellHeights
+        self.bgZones = cellZones
+        self.heightAboveWater = world.heightGrid[row][col]
+
+        print(len(self.bgHeights))
+
+                    
+                    
+        
 
 
         

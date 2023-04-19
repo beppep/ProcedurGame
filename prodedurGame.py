@@ -18,6 +18,7 @@ player = Player()
 
 worldSize = 30
 world = World(worldSize,worldSize)
+room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
 pressed = pygame.key.get_pressed()
 jumpOut = False
 camera = [0,0]
@@ -32,8 +33,22 @@ while jumpOut == False:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 world = World(worldSize,worldSize)
+                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_t:
                 worldVisible = not worldVisible
+
+            if event.key == pygame.K_a:
+                world.tryMovePlayer(-1,0)
+                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+            if event.key == pygame.K_s:
+                world.tryMovePlayer(0,1)
+                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+            if event.key == pygame.K_w:
+                world.tryMovePlayer(0,-1)
+                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+            if event.key == pygame.K_d:
+                world.tryMovePlayer(1,0)
+                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
 
 
         if event.type == pygame.MOUSEBUTTONDOWN:
