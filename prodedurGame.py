@@ -53,14 +53,7 @@ while jumpOut == False:
                 pos = pygame.mouse.get_pos()
                 world.currentRoom.click(pos[0]+camera[0],pos[1]+ camera[1])
     camera = [player.x-screenWidth/2,player.y-screenHeight/2] 
-    if pressed[pygame.K_w]:
-        camera[1] -= 50
-    if pressed[pygame.K_s]:
-        camera[1] += 50
-    if pressed[pygame.K_a]:
-        camera[0] -= 50
-    if pressed[pygame.K_d]:
-        camera[0] += 50
+    
     camera[0] = max(0,min(camera[0],world.currentRoom.width-screenWidth))
     camera[1] = max(0,min(camera[1],world.currentRoom.height-screenHeight))
     
