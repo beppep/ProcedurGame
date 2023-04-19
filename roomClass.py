@@ -111,7 +111,8 @@ class Room():
     
     def draw(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight):
         #Draw ocean/horizon
-        pygame.draw.rect(display, (10,10,200),(0,cameraHeight/2,cameraWidth,cameraHeight),0)
+        horizon = 1.3
+        pygame.draw.rect(display, (10,10,200),(0,horizon*cameraHeight/2,cameraWidth,cameraHeight),0)
 
         if self.bgHeights != None:
             for i in range(min(len(Room.hillImages),len(self.bgHeights))):
@@ -156,14 +157,14 @@ class Room():
                     elif self.bgZones[ind][heightInd] == World.cliffs:
                         image = Room.cliffsImages[ind]
                         imageDisp = 100
-                    camCenterHeight = 0
+                    camCenterHeight = 1.2
                     drawX = j*w+setX
-                    drawY = cameraHeight/2-(cameraY+100*(height-self.heightAboveWater-camCenterHeight) + imageDisp)/(ind+2)
+                    drawY = horizon*cameraHeight/2-(cameraY+100*(height-self.heightAboveWater-camCenterHeight) + imageDisp)/(ind+2)
                     
                     if self.bgZones[ind][heightInd] == World.water:
                         pygame.draw.rect(display,(10,10,200),(drawX,drawY,800/(ind+2),800/(ind+2)),0)
-                    elif self.bgZones[ind][heightInd] == World.cliffs:
-                        pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
+                    #elif self.bgZones[ind][heightInd] == World.cliffs:
+                    #    pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
                     else:
                         display.blit(image,(drawX,drawY))
                         

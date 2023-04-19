@@ -1,6 +1,8 @@
 import pygame 
 import random
 
+from roomClass import Room
+
 class World:
     water = 0
     beach = 1
@@ -94,6 +96,8 @@ class World:
         for i in range(5):
             alts.append(World.checkCompatibility(grid,row,col,i))
         return alts
+
+    
 
     def checkInverseCompatibility(grid,row,col,cType):
         type = grid[row][col]
