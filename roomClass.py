@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from betterWorldClass import World
+from constants import Constants
 
 class Room():
 
@@ -143,28 +143,28 @@ class Room():
                     #TODO Should potentially add extra height term for camera height above ground
                     # in in-game units.
                     imageDisp = 0
-                    if self.bgZones[ind][heightInd] == World.water:
+                    if self.bgZones[ind][heightInd] == Constants.water:
                         image = Room.waterImages[ind]
                         #imageDisp = -0.4
-                    elif self.bgZones[ind][heightInd] == World.beach:
+                    elif self.bgZones[ind][heightInd] == Constants.beach:
                         image = Room.beachImages[ind]
                         #imageDisp = 0
-                    elif self.bgZones[ind][heightInd] == World.plains:
+                    elif self.bgZones[ind][heightInd] == Constants.plains:
                         image = Room.hillImages[ind]
                         imageDisp = 70
-                    elif self.bgZones[ind][heightInd] == World.woods:
+                    elif self.bgZones[ind][heightInd] == Constants.woods:
                         image = Room.woodsImages[ind]
                         imageDisp = 100
-                    elif self.bgZones[ind][heightInd] == World.cliffs:
+                    elif self.bgZones[ind][heightInd] == Constants.cliffs:
                         image = Room.cliffsImages[ind]
                         imageDisp = 100
                     camCenterHeight = 1.2
                     drawX = j*w+setX
                     drawY = horizon*cameraHeight/2-(cameraY+100*(height-self.heightAboveWater-camCenterHeight) + imageDisp)/(ind+2)
                     
-                    if self.bgZones[ind][heightInd] == World.water:
+                    if self.bgZones[ind][heightInd] == Constants.water:
                         pygame.draw.rect(display,(10,10,200),(drawX,drawY,800/(ind+2),800/(ind+2)),0)
-                    #elif self.bgZones[ind][heightInd] == World.cliffs:
+                    #elif self.bgZones[ind][heightInd] == Constants.cliffs:
                     #    pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
                     else:
                         display.blit(image,(drawX,drawY))
@@ -177,7 +177,7 @@ class Room():
             gridRow = self.grid[row]
             for col in range(max(0,startCol),min(startCol+cameraWidth//self.blockWidth + 2,len(self.grid[0]))):
                 if gridRow[col]:
-                    color = World.colors[World.beach]
+                    color = Constants.colors[Constants.beach]
                     pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                     #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
 
@@ -216,7 +216,7 @@ class Room():
             for y in range(self.rows):
                 self.grid[y][x] = 1*(self.rows-1-y<grassHeight)
 
-    def updateBackground(self,world:World,row,col):
+    def updateBackground(self,world,row,col):
         cellZones = []
         cellHeights = []
         
@@ -228,7 +228,7 @@ class Room():
             for j in range(len(cellHeights[i])):
                 if col + j - i - 1 < 0 or col + j - i - 1 >= world.width:
                     cellHeights[i][j] = 0
-                    cellZones[i][j] = World.water
+                    cellZones[i][j] = Constants.water
                 else:
                     try:
                         cellHeights[i][j] = world.heightGrid[row-i-1][col+j-i-1]
