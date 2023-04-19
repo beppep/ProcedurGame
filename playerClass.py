@@ -69,6 +69,11 @@ class Player:
         self.x += self.xv
         self.y += self.yv
 
+
+
+        if self.x<0:
+            pass
+
     def draw(self,display,cameraX,cameraY):
         display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
 

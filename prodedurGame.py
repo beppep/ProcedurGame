@@ -2,15 +2,15 @@ import time
 import random
 import pygame
 import os
+screenWidth = 1000
+screenHeight = 600
+gameDisplay = pygame.display.set_mode((screenWidth, screenHeight))
 from roomClass import Room
 from playerClass import Player
 from betterWorldClass import World
 clock = pygame.time.Clock()
 
 
-screenWidth = 1000
-screenHeight = 600
-gameDisplay = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption("Yo Game")
 room = Room(100,20)
 

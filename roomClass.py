@@ -21,7 +21,7 @@ class Room():
     h = hillImages[0].get_height()
 
     for i in range (3,11):
-        surf = pygame.transform.scale(hillImages[0],(2*w/i,2*h/i))
+        surf = pygame.transform.scale(hillImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         hillImages.append(surf)
 
@@ -32,7 +32,7 @@ class Room():
     h = woodsImages[0].get_height()
 
     for i in range (3,11):
-        surf = pygame.transform.scale(woodsImages[0],(2*w/i,2*h/i))
+        surf = pygame.transform.scale(woodsImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         woodsImages.append(surf)
 
@@ -43,7 +43,7 @@ class Room():
     h = cliffsImages[0].get_height()
 
     for i in range (3,11):
-        surf = pygame.transform.scale(cliffsImages[0],(2*w/i,2*h/i))
+        surf = pygame.transform.scale(cliffsImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         cliffsImages.append(surf)
 
@@ -54,7 +54,7 @@ class Room():
     h = beachImages[0].get_height()
 
     for i in range (3,11):
-        surf = pygame.transform.scale(beachImages[0],(2*w/i,2*h/i))
+        surf = pygame.transform.scale(beachImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         beachImages.append(surf)
 
@@ -65,7 +65,7 @@ class Room():
     h = waterImages[0].get_height()
 
     for i in range (3,11):
-        surf = pygame.transform.scale(waterImages[0],(2*w/i,2*h/i))
+        surf = pygame.transform.scale(waterImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         waterImages.append(surf)
 
@@ -171,16 +171,16 @@ class Room():
             gridRow = self.grid[row]
             for col in range(max(0,startCol),min(startCol+cameraWidth//self.blockWidth + 2,len(self.grid[0]))):
                 if gridRow[col]:
-                    color = (200,200,130)
+                    color = World.colors[World.beach]
                     pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                     #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
 
 
 
     def generateSand(self):
-        lo = 6
-        hi = 10
-        sandHeight = 8
+        lo = 3
+        hi = 7
+        sandHeight = 5
         for row in range(self.rows):
             self.grid.append([0]*self.cols)
         for x in range(self.cols):
@@ -192,6 +192,23 @@ class Room():
                     sandHeight+=1
             for y in range(self.rows):
                 self.grid[y][x] = 1*(self.rows-1-y<sandHeight)
+
+
+    def generateGrass(self):
+        lo = 6
+        hi = 12
+        grassHeight = 8
+        for row in range(self.rows):
+            self.grid.append([0]*self.cols)
+        for x in range(self.cols):
+            if random.random()<0.1:
+                downchance = (grassHeight-lo)/(hi-lo)
+                if random.random() < downchance:
+                    grassHeight-=1
+                else:
+                    grassHeight+=1
+            for y in range(self.rows):
+                self.grid[y][x] = 1*(self.rows-1-y<grassHeight)
 
     def updateBackground(self,world:World,row,col):
         cellZones = []
