@@ -20,7 +20,7 @@ class Player:
         self.image.set_colorkey((255,0,255))
         #Curry, Ananas, Banan
 
-    def update(self,pressed,room):
+    def update(self,pressed,world):
         if len (self.prevPressed) > 0:
             if pressed[pygame.K_RIGHT] and (not pressed[pygame.K_LEFT] or not self.prevPressed[pygame.K_RIGHT]):
                 self.moveDir = 1
@@ -34,7 +34,7 @@ class Player:
         self.xv += self.moveDir*self.xSpeed
         self.xv *= self.xFriction
 
-        if room.checkFree(self.mask,self.x,self.y+1):
+        if world.currentRoom.checkFree(self.mask,self.x,self.y+1):
             self.yv += self.gravity
         elif pressed[pygame.K_UP] and self.yv >= 0:
             self.yv = -self.jumpspeed
@@ -43,24 +43,24 @@ class Player:
 
         #Kollar kollisioner i x och y led.
         #Om det finns en kollision, stega pixelvis tills vi når fram till hindret, sätt hastighet till 0
-        if not room.checkFree(self.mask,self.x+self.xv,self.y+self.yv):
+        if not world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y+self.yv):
             # Vi bromsar hellre i y-led än i x-led
             # Om det är fritt i x-led eller blockerat i både x- och y-led, stega först i y-riktningen
-            if room.checkFree(self.mask,self.x+self.xv,self.y) or (not room.checkFree(self.mask,self.x,self.y+self.yv) and not room.checkFree(self.mask,self.x+self.xv,self.y)):
+            if world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y) or (not world.currentRoom.checkFree(self.mask,self.x,self.y+self.yv) and not world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y)):
                 self.y = int(self.y)
                 sign = (self.yv > 0)*2 -1
                 for i in range(int(abs(self.yv*1.5))):
-                    if room.checkFree(self.mask,self.x+self.xv,self.y + sign):
+                    if world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y + sign):
                         self.y += sign
                     else:
                         break
                 self.yv = 0
             # Om det fortfarande inte är fritt, stega nu i x-riktningen
-            if not room.checkFree(self.mask,self.x + self.xv,self.y + self.yv):
+            if not world.currentRoom.checkFree(self.mask,self.x + self.xv,self.y + self.yv):
                 self.x = int(self.x)
                 sign = (self.xv > 0)*2-1
                 for i in range(int(abs(self.xv*1.5))):
-                    if room.checkFree(self.mask,self.x+sign,self.y + self.yv):
+                    if world.currentRoom.checkFree(self.mask,self.x+sign,self.y + self.yv):
                         self.x += sign
                     else:
                         break
@@ -72,7 +72,17 @@ class Player:
 
 
         if self.x<0:
-            pass
+            success = world.tryMovePlayer(-1,0)
+            if success:
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                self.x = world.currentRoom.width
+                self.y = 100
+        if self.x>world.currentRoom.width:
+            success = world.tryMovePlayer(1,0)
+            if success:
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                self.x = 0
+                self.y = 100
 
     def draw(self,display,cameraX,cameraY):
         display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))

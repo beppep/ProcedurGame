@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from roomClass import Room
+
 class World:
 
     water = 0
@@ -22,6 +24,8 @@ class World:
         self.seed = seed
         self.width = width
         self.height = height
+        self.currentRoom = Room(100,20)
+        self.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
 
         medgrid = []
         self.heightGrid = []

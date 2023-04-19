@@ -2,6 +2,7 @@ import pygame
 import random
 
 from betterWorldClass import World
+
 class Room():
 
 
@@ -205,7 +206,7 @@ class Room():
         for row in range(self.rows):
             self.grid.append([0]*self.cols)
         for x in range(self.cols):
-            if random.random()<0.1:
+            if random.random()<0.2:
                 downchance = (grassHeight-lo)/(hi-lo)
                 if random.random() < downchance:
                     grassHeight-=1

@@ -12,13 +12,11 @@ clock = pygame.time.Clock()
 
 
 pygame.display.set_caption("Yo Game")
-room = Room(100,20)
 
 player = Player()
 
 worldSize = 50
 world = World(worldSize,worldSize)
-room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
 pressed = pygame.key.get_pressed()
 jumpOut = False
 camera = [0,0]
@@ -33,27 +31,27 @@ while jumpOut == False:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 world = World(worldSize,worldSize)
-                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_t:
                 worldVisible = not worldVisible
 
             if event.key == pygame.K_a:
                 world.tryMovePlayer(-1,0)
-                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_s:
                 world.tryMovePlayer(0,1)
-                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_w:
                 world.tryMovePlayer(0,-1)
-                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_d:
                 world.tryMovePlayer(1,0)
-                room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
-                room.click(pos[0]+camera[0],pos[1]+ camera[1])
+                world.currentRoom.click(pos[0]+camera[0],pos[1]+ camera[1])
     camera = [player.x-screenWidth/2,player.y-screenHeight/2] 
     if pressed[pygame.K_w]:
         camera[1] -= 50
@@ -63,12 +61,12 @@ while jumpOut == False:
         camera[0] -= 50
     if pressed[pygame.K_d]:
         camera[0] += 50
-    camera[0] = max(0,min(camera[0],room.width-screenWidth))
-    camera[1] = max(0,min(camera[1],room.height-screenHeight))
+    camera[0] = max(0,min(camera[0],world.currentRoom.width-screenWidth))
+    camera[1] = max(0,min(camera[1],world.currentRoom.height-screenHeight))
     
-    player.update(pressed,room)
+    player.update(pressed,world)
     gameDisplay.fill((180,200,250))
-    room.draw(gameDisplay,camera[0],camera[1],1000,600)
+    world.currentRoom.draw(gameDisplay,camera[0],camera[1],1000,600)
     player.draw(gameDisplay,camera[0],camera[1])
     #world.drawMap(gameDisplay)
     if worldVisible:
