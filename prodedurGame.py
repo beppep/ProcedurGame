@@ -16,7 +16,7 @@ room = Room(100,20)
 
 player = Player()
 
-worldSize = 30
+worldSize = 50
 world = World(worldSize,worldSize)
 room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
 pressed = pygame.key.get_pressed()
@@ -49,8 +49,7 @@ while jumpOut == False:
             if event.key == pygame.K_d:
                 world.tryMovePlayer(1,0)
                 room.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
-
-
+                
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
