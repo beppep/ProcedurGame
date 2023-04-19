@@ -46,11 +46,12 @@ class Player:
         if not world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y+self.yv):
             # Vi bromsar hellre i y-led än i x-led
             # Om det är fritt i x-led eller blockerat i både x- och y-led, stega först i y-riktningen
-            if world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y) or (not world.currentRoom.checkFree(self.mask,self.x,self.y+self.yv) and not world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y)):
+            xfree = world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y)
+            if xfree or (not world.currentRoom.checkFree(self.mask,self.x,self.y+self.yv) and not world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y)):
                 self.y = int(self.y)
                 sign = (self.yv > 0)*2 -1
                 for i in range(int(abs(self.yv*1.5))):
-                    if world.currentRoom.checkFree(self.mask,self.x+self.xv,self.y + sign):
+                    if world.currentRoom.checkFree(self.mask,self.x+self.xv*xfree,self.y + sign):
                         self.y += sign
                     else:
                         break

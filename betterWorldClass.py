@@ -56,6 +56,7 @@ class World:
                         self.zoneGrid[i][j] = Constants.plains
                     elif count < 3 or (count == 3 and self.rand.randint(0,1)):
                         self.zoneGrid[i][j] = Constants.beach
+                        self.heightGrid[i][j] /=5
                     else:
                         self.zoneGrid[i][j] = Constants.cliffs
                         self.heightGrid[i][j] += 2  

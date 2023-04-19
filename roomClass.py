@@ -13,7 +13,7 @@ class Room():
     #Only applies if images are approximately 400 pixels wide
     #TODO(?) make these values dependent on image width. (may need one value per image :( )
 
-
+    depth = 25
 
     hillImages = []
     hillImages.append(pygame.image.load("res/hill.png"))
@@ -21,7 +21,7 @@ class Room():
     w = hillImages[0].get_width()
     h = hillImages[0].get_height()
 
-    for i in range (3,11):
+    for i in range (3,3+depth):
         surf = pygame.transform.scale(hillImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         hillImages.append(surf)
@@ -32,7 +32,7 @@ class Room():
     w = woodsImages[0].get_width()
     h = woodsImages[0].get_height()
 
-    for i in range (3,11):
+    for i in range (3,3+depth):
         surf = pygame.transform.scale(woodsImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         woodsImages.append(surf)
@@ -43,7 +43,7 @@ class Room():
     w = cliffsImages[0].get_width()
     h = cliffsImages[0].get_height()
 
-    for i in range (3,11):
+    for i in range (3,3+depth):
         surf = pygame.transform.scale(cliffsImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         cliffsImages.append(surf)
@@ -54,7 +54,7 @@ class Room():
     w = beachImages[0].get_width()
     h = beachImages[0].get_height()
 
-    for i in range (3,11):
+    for i in range (3,3+depth):
         surf = pygame.transform.scale(beachImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         beachImages.append(surf)
@@ -65,7 +65,7 @@ class Room():
     w = waterImages[0].get_width()
     h = waterImages[0].get_height()
 
-    for i in range (3,11):
+    for i in range (3,3+depth):
         surf = pygame.transform.scale(waterImages[0],(int(2*w/i),int(2*h/i))).convert()
         surf.set_colorkey((255,0,255))
         waterImages.append(surf)
@@ -85,7 +85,7 @@ class Room():
         self.height = height*self.blockWidth
         self.rows = height
         self.cols = width
-        self.generateCliffs()
+        self.generateSand()
 
         self.bgHeights = None
         self.bgZones = None
@@ -151,10 +151,10 @@ class Room():
                         #imageDisp = 0
                     elif self.bgZones[ind][heightInd] == Constants.plains:
                         image = Room.hillImages[ind]
-                        imageDisp = 70
+                        imageDisp = 90
                     elif self.bgZones[ind][heightInd] == Constants.woods:
                         image = Room.woodsImages[ind]
-                        imageDisp = 100
+                        imageDisp = 130
                     elif self.bgZones[ind][heightInd] == Constants.cliffs:
                         image = Room.cliffsImages[ind]
                         imageDisp = 100
