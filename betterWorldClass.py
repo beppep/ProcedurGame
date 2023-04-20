@@ -82,7 +82,12 @@ class World:
             self.playerCoords = (self.rand.randint(1,self.width-1),self.rand.randint(1,self.height-1))
             done = self.zoneGrid[self.playerCoords[1]][self.playerCoords[0]] == Constants.beach
 
-        self.currentRoom = Room(100,20)
+        self.roomGrid = []
+        for y in range(height):
+            self.roomGrid.append([0]*width)
+            for x in range(width):
+                self.roomGrid[y][x] = Room(100,20)
+        self.currentRoom = self.roomGrid[self.playerCoords[1]][self.playerCoords[0]]
         self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
 
     def countWater(self,row,col):
