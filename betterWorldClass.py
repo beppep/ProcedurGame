@@ -108,6 +108,7 @@ class World:
         if self.zoneGrid[newRow][newCol] == Constants.water:
             return False
         self.playerCoords=(newCol,newRow)
+        self.currentRoom = self.roomGrid[newRow][newCol]
         return True
 
     def draw(self,display):
