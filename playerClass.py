@@ -36,7 +36,7 @@ class Player:
 
         if world.currentRoom.checkFree(self.mask,self.x,self.y+1):
             self.yv += self.gravity
-        elif pressed[pygame.K_UP] and self.yv >= 0:
+        elif pressed[pygame.K_SPACE] and self.yv >= 0:
             self.yv = -self.jumpspeed
         
         #self.yv *= self.yFriction pls no
@@ -78,13 +78,30 @@ class Player:
                 world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x = world.currentRoom.width
                 self.y = 100
+            else:
+               self.x = 0
         if self.x>world.currentRoom.width:
             success = world.tryMovePlayer(1,0)
             if success:
                 world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x = 0
                 self.y = 100
+            else:
+                self.x = world.currentRoom.width
+                
+        if abs(self.x - world.currentRoom.width/4) < 30 and pressed[pygame.K_UP]:
+            if (world.tryMovePlayer(0,-1)):
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                self.x += world.currentRoom.width/2
+                self.y -= 96
+        elif abs(self.x - 3*world.currentRoom.width/4) < 30 and pressed[pygame.K_DOWN]:
+            if (world.tryMovePlayer(0,1)):
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                self.x -= world.currentRoom.width/2
+                self.y -= 96
+        
+                
 
     def draw(self,display,cameraX,cameraY):
         display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
-
+            

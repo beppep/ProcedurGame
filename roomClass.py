@@ -7,6 +7,11 @@ class Room():
 
 
     #Init some background stuff. Images in different sizes
+
+
+    pathImage = pygame.image.load("res/path.png").convert()
+    pathImage.set_colorkey((255,0,255))
+
     backStartInd = -1 # Found out through trial and error
     backGroupWidth = 4 # images at indices -1 ,0 ,1, 2 represent landscape of cell directly north of room
     #(Indices here refers to inds computed in the draw method (j))
@@ -15,8 +20,13 @@ class Room():
 
     depth = 25
 
+    fogSurf = pygame.Surface((1000,600))  # the size of your rect
+    fogSurf.set_alpha(10)                # alpha level
+    fogSurf.fill((200,200,255))           # this fills the entire surface
+    
+
     hillImages = []
-    hillImages.append(pygame.image.load("res/hill.png"))
+    hillImages.append(pygame.image.load("res/hill.png").convert())
     hillImages[0].set_colorkey((255,0,255))
     w = hillImages[0].get_width()
     h = hillImages[0].get_height()
@@ -92,6 +102,10 @@ class Room():
         self.heightAboveWater = 1
         self.zone = 1
 
+        
+
+        
+
     
     def checkFree(self,rectangle,xdisp = 0,ydisp = 0):
         startRow = max(int(rectangle[1] + ydisp)//self.blockWidth,0)
@@ -110,19 +124,21 @@ class Room():
         if row < 0 or row >= len(self.grid) or col < 0 or col >= len(self.grid[0]):
             return
         self.grid[row][col] = not self.grid[row][col]
-    
-    def draw(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight):
+
+
+    def drawBackground(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
         #Draw ocean/horizon
         horizon = 1.3
         pygame.draw.rect(display, (10,10,200),(0,horizon*cameraHeight/2,cameraWidth,cameraHeight),0)
 
+        #TODO Change so that the world.grid attributes are used directly when drawing the backgrounds
         if self.bgHeights != None:
             for i in range(min(len(Room.hillImages),len(self.bgHeights))):
                 ind = min(len(Room.hillImages),len(self.bgHeights))-1-i
                 surf = Room.hillImages[ind]
                 w = surf.get_width()
                 offSet = (1037*i) % 159 #Gives kinda random look
-                setX = cameraWidth/2-cameraX/(ind+2) + offSet
+                setX = cameraWidth/2-(cameraX + offSet)/(ind+2) 
                 startInd = -int(setX//w) - 1
                 endInd = startInd + int(cameraWidth//w) + 2
                 devJs = []
@@ -169,8 +185,26 @@ class Room():
                     #    pygame.draw.rect(display,(100,100,100),(drawX,drawY,800/(ind+2),700/(ind+2)),0)
                     else:
                         display.blit(image,(drawX,drawY))
-        color =(min(255,Constants.colors[self.zone][0]+30),min(255,Constants.colors[self.zone][1]+30),min(255,Constants.colors[self.zone][2]+30))
-        pygame.draw.rect(display,color,(0,self.height-100-cameraY,cameraWidth,cameraHeight),0)             
+
+                if i % 5 == 4: #or (ind < 9 and ind > 2):
+                    display.blit(Room.fogSurf,(0,0))
+        
+        #Drawing closest background layer
+        for i in range(8):
+            l = self.width/8
+            x1 = i*l -cameraX
+            x2 = x1 + l 
+            a = world.playerCoords[0]
+            b = world.playerCoords[1]
+            y1 = self.height-(a*b*i +2*a*i + b + i*i) % 7 * 10 - 80 -cameraY 
+            y2 = self.height-(a*b*(i+1) +2*a*(i+1) + b + (i+1)*(i + 1)) % 7 * 10 - 80 -cameraY
+            color =(min(255,Constants.colors[self.zone][0]+30),min(255,Constants.colors[self.zone][1]+30),min(255,Constants.colors[self.zone][2]+30))
+            pygame.draw.polygon(display,color,[(x1,y1),(x2,y2),(x2,cameraHeight),(x1,cameraHeight)],0)
+
+
+    def drawBlocks(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
+        #color =(min(255,Constants.colors[self.zone][0]+30),min(255,Constants.colors[self.zone][1]+30),min(255,Constants.colors[self.zone][2]+30))
+        #pygame.draw.rect(display,color,(0,self.height-100-cameraY,cameraWidth,cameraHeight),0)             
 
         startRow = int(cameraY)//self.blockWidth 
         startCol = int(cameraX)//self.blockWidth 
@@ -182,6 +216,20 @@ class Room():
                     color = Constants.colors[self.zone]
                     pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                     #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
+
+
+    def drawPathFg(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
+        #Drawing path fg
+        xx = 3*self.width/4 - 200 - cameraX
+        yy = self.height - 400 +250 - cameraY
+        display.blit(Room.pathImage,(xx,yy))
+
+    def drawPathBg(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
+        #Drawing path bg
+        xx = self.width/4 - 200 - cameraX
+        yy = self.height - 400 +200 - cameraY
+        display.blit(Room.pathImage,(xx,yy))
+
 
 
 

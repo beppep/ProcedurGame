@@ -35,7 +35,7 @@ while jumpOut == False:
             if event.key == pygame.K_t:
                 worldVisible = not worldVisible
 
-            if event.key == pygame.K_a:
+            '''if event.key == pygame.K_a:
                 world.tryMovePlayer(-1,0)
                 world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_s:
@@ -46,7 +46,7 @@ while jumpOut == False:
                 world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
             if event.key == pygame.K_d:
                 world.tryMovePlayer(1,0)
-                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
+                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])'''
                 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
@@ -59,8 +59,11 @@ while jumpOut == False:
     
     player.update(pressed,world)
     gameDisplay.fill((180,200,250))
-    world.currentRoom.draw(gameDisplay,camera[0],camera[1],1000,600)
+    world.currentRoom.drawBackground(gameDisplay,camera[0],camera[1],1000,600,world)
+    world.currentRoom.drawPathBg(gameDisplay,camera[0],camera[1],1000,600,world)
+    world.currentRoom.drawBlocks(gameDisplay,camera[0],camera[1],1000,600,world)
     player.draw(gameDisplay,camera[0],camera[1])
+    world.currentRoom.drawPathFg(gameDisplay,camera[0],camera[1],1000,600,world)
     #world.drawMap(gameDisplay)
     if worldVisible:
         world.draw(gameDisplay)
