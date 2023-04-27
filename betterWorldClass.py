@@ -83,10 +83,10 @@ class World:
             done = self.zoneGrid[self.playerCoords[1]][self.playerCoords[0]] == Constants.beach
 
         self.roomGrid = []
-        for y in range(height):
+        for row in range(height):
             self.roomGrid.append([0]*width)
-            for x in range(width):
-                self.roomGrid[y][x] = Room(100,20)
+            for col in range(width):
+                self.roomGrid[row][col] = Room(100,20,row,col,self)
         self.currentRoom = self.roomGrid[self.playerCoords[1]][self.playerCoords[0]]
         self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
 
@@ -109,6 +109,10 @@ class World:
             return False
         self.playerCoords=(newCol,newRow)
         self.currentRoom = self.roomGrid[newRow][newCol]
+        print("Room row: "+str(self.currentRoom.row))
+        print("Room col: "+str(self.currentRoom.col))
+        print("Left zone: "+str(self.zoneGrid[self.currentRoom.row][self.currentRoom.col-1]))
+        print("Right zone: "+str(self.zoneGrid[self.currentRoom.row][self.currentRoom.col+1]))
         return True
 
     def draw(self,display):
