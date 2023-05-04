@@ -2,6 +2,7 @@ import pygame
 import random
 from roomClass import Room
 from entityClass import Entity
+from weaponClass import Weapon
 
 class Player(Entity):
 
@@ -21,7 +22,7 @@ class Player(Entity):
         self.image.set_colorkey((255,0,255))
         self.maxHealth = random.randint(4,5)
         self.health = self.maxHealth
-        self.weapon = None
+        self.weapon = Weapon(self)
 
     def update(self,pressed,world):
         if len (self.prevPressed) > 0:
@@ -76,4 +77,6 @@ class Player(Entity):
 
     def draw(self,display,cameraX,cameraY):
         display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
+        if self.weapon:
+            self.weapon.draw(display,cameraX,cameraY)
             

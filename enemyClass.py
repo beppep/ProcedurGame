@@ -12,7 +12,7 @@ class Enemy(Entity):
         preset["name"] = "Enemy "+str(i)
         preset["maxHealth"] = random.randint(1,random.randint(1,5))
         preset["gravity"] = random.random() * (random.random()>0.5)
-        preset["xspeed"] = random.random() * (random.random()>0.5)
+        preset["speed"] = random.random() * (random.random()>0.5)
         presets.append(preset)
 
 
@@ -25,24 +25,34 @@ class Enemy(Entity):
         self.maxHealth = preset["maxHealth"]
         self.health = self.maxHealth
         self.gravity = preset["gravity"]
-        self.xSpeed = preset["xspeed"]
-        self.xFriction = 0.95
+        self.speed = preset["speed"]
+        self.friction = 0.95
         self.jumpspeed = (self.gravity)**0.5 * 16
-        self.image = pygame.image.load("res/hej.png")
+        self.image = pygame.image.load("res/onding.png")
         self.image.set_colorkey((255,0,255))
 
     def update(self,world, player):
 
-        if player.x>self.x:
+        dirX = player.x - self.x
+        dirY = player.y - self.y
+        hyp = (dirX**2 + dirY**2)**0.5
+        if hyp!=0:
+            dirX = dirX/hyp
+            dirY = dirY/hyp
+
+        if dirX>0:
             self.turnDir = 1
         else:
             self.turnDir = -1
-        self.xv += self.xSpeed * self.turnDir
-        self.xv *= self.xFriction
+        self.xv += self.speed * dirX
+        self.xv *= self.friction
+        if self.gravity == 0:
+            self.yv += self.speed * dirY
+            self.yv *= self.friction
 
         if world.currentRoom.checkFree(self.mask,self.x,self.y+1):
             self.yv += self.gravity
-        elif random.random()<0.01 and self.yv >= 0:
+        elif random.random()<0.01 and self.yv>=0:
             self.yv = -self.jumpspeed
         
         super().update(world)
