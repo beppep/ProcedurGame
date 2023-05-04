@@ -338,6 +338,26 @@ class Room():
                     break
                 self.grid[i][0] = Constants.cliffs
 
+        minLen = 2
+        maxLen = 20
+        if col > 0  and world.zoneGrid[row][col-1] == Constants.water and type != Constants.cliffs:
+            for i in range(self.rows-hi,self.rows):
+                for j in range(self.cols):
+                    if self.grid[i][j] != -1 and j > minLen+(maxLen-minLen)/hi*(self.rows-1-i):
+                        break
+                    for ii in range(i,self.rows):
+                        if self.grid[ii][j] == -1 or ii == i:
+                            self.grid[ii][j] = Constants.water if i > self.rows-hi -1 else -1
+
+        if col < world.width - 1 and world.zoneGrid[row][col+1] == Constants.water and type != Constants.cliffs:
+            for i in range(self.rows-hi,self.rows):
+                for j in range(self.cols):
+                    if self.grid[i][self.cols-1-j] != -1 and j > minLen+(maxLen-minLen)/hi*(self.rows-1-i):
+                        break
+                    for ii in range(i,self.rows):
+                        if self.grid[ii][self.cols-1-j] == -1 or ii == i:
+                            self.grid[ii][self.cols-1-j] = Constants.water if i > self.rows-hi -1 else -1
+
     def updateBackground(self,world,row,col):
         cellZones = []
         cellHeights = []

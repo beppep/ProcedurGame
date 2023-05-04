@@ -61,8 +61,8 @@ while jumpOut == False:
     gameDisplay.fill((180,200,250))
     world.currentRoom.drawBackground(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathBg(gameDisplay,camera[0],camera[1],1000,600,world)
-    world.currentRoom.drawBlocks(gameDisplay,camera[0],camera[1],1000,600,world)
     player.draw(gameDisplay,camera[0],camera[1])
+    world.currentRoom.drawBlocks(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathFg(gameDisplay,camera[0],camera[1],1000,600,world)
     #world.drawMap(gameDisplay)
     if worldVisible:
