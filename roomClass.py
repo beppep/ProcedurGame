@@ -103,11 +103,7 @@ class Room():
         self.bgHeights = None
         self.bgZones = None
         self.heightAboveWater = 1
-        
-
-        
-
-        
+        self.enemies = []
 
     
     def checkFree(self,rectangle,xdisp = 0,ydisp = 0):

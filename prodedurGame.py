@@ -7,6 +7,7 @@ screenHeight = 600
 gameDisplay = pygame.display.set_mode((screenWidth, screenHeight))
 from roomClass import Room
 from playerClass import Player
+from enemyClass import Enemy
 from betterWorldClass import World
 clock = pygame.time.Clock()
 
@@ -47,6 +48,8 @@ while jumpOut == False:
             if event.key == pygame.K_d:
                 world.tryMovePlayer(1,0)
                 world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])'''
+            if event.key == pygame.K_e:
+                world.currentRoom.enemies.append(Enemy(world.playerCoords[1]+100,world.playerCoords[0]+100,random.choice(Enemy.presets)))
                 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
@@ -58,9 +61,13 @@ while jumpOut == False:
     camera[1] = max(0,min(camera[1],world.currentRoom.height-screenHeight))
     
     player.update(pressed,world)
+    for enemy in world.currentRoom.enemies:
+        enemy.update(world, player)
     gameDisplay.fill((180,200,250))
     world.currentRoom.drawBackground(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathBg(gameDisplay,camera[0],camera[1],1000,600,world)
+    for enemy in world.currentRoom.enemies:
+        enemy.draw(gameDisplay,camera[0],camera[1])
     player.draw(gameDisplay,camera[0],camera[1])
     world.currentRoom.drawBlocks(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathFg(gameDisplay,camera[0],camera[1],1000,600,world)
