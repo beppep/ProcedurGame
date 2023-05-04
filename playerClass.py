@@ -14,11 +14,10 @@ class Player:
         self.xFriction = 0.9 + 0.05*random.random()
         self.gravity = 0.3+0.5*random.random()
         self.jumpspeed = (self.gravity)**0.5 * 16
-        #self.yFriction = 0.95 + 0.05*random.random() pls no
         self.prevPressed = []
         self.image = pygame.image.load("res/hej.png")
         self.image.set_colorkey((255,0,255))
-        #Curry, Ananas, Banan
+        self.weapon = None
 
     def update(self,pressed,world):
         if len (self.prevPressed) > 0:
@@ -39,7 +38,6 @@ class Player:
         elif pressed[pygame.K_SPACE] and self.yv >= 0:
             self.yv = -self.jumpspeed
         
-        #self.yv *= self.yFriction pls no
 
         #Kollar kollisioner i x och y led.
         #Om det finns en kollision, stega pixelvis tills vi når fram till hindret, sätt hastighet till 0

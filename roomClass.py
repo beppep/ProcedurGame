@@ -83,7 +83,7 @@ class Room():
     
         
     
-    def __init__ (self,width,height):
+    def __init__ (self,width,height,zone):
         self.seed = 10234789
         self.grid = []
         self.blockWidth = 32
@@ -95,7 +95,12 @@ class Room():
         self.height = height*self.blockWidth
         self.rows = height
         self.cols = width
-        self.generateSand()
+        if zone == Constants.beach:
+            self.generateSand()
+        elif zone == Constants.cliffs:
+            self.generateCliffs()
+        else:
+            self.generateGrass()
 
         self.bgHeights = None
         self.bgZones = None

@@ -86,7 +86,7 @@ class World:
         for y in range(height):
             self.roomGrid.append([0]*width)
             for x in range(width):
-                self.roomGrid[y][x] = Room(100,20)
+                self.roomGrid[y][x] = Room(100,20, self.zoneGrid[y][x])
         self.currentRoom = self.roomGrid[self.playerCoords[1]][self.playerCoords[0]]
         self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
 
