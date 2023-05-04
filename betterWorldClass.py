@@ -71,10 +71,41 @@ class World:
                     self.zoneGrid[i][j] = Constants.cliffs
                     self.heightGrid[i][j] += 4
 
+        #Generates different regions on the map
+        regions = 5
+        self.regionGrid = []
+        for row in range(height):
+            self.regionGrid.append([0]*width)
+        newCells = []
+        for i in range(1,regions+1):
+            while(True):
+                cell = (self.rand.randint(0,height-1),self.rand.randint(0,width-1))
+                t = self.zoneGrid[cell[0]][cell[1]]
+                if t != Constants.water and t != Constants.cliffs and self.regionGrid[cell[0]][cell[1]] == 0:
+                    self.regionGrid[cell[0]][cell[1]] = i
+                    newCells.append(cell)
+                    break
+        
+        while len(newCells) > 0:
+            cell = newCells.pop(0)
+            region = self.regionGrid[cell[0]][cell[1]]
+            neighbours = [(cell[0]-1,cell[1]),(cell[0]+1,cell[1]),(cell[0],cell[1]-1),(cell[0],cell[1]+1)]
+            for c in neighbours:
+                if c[0] < height and c[0] >= 0 and c[1] < width and c[1] >= 0:
+                    t = self.zoneGrid[c[0]][c[1]]
+                    if t != Constants.water and t != Constants.cliffs and self.regionGrid[c[0]][c[1]] == 0:
+                        self.regionGrid[c[0]][c[1]] = region
+                        newCells.append(c)
+
         self.surf = pygame.Surface((width*5*2,height*5))
+        regionColors = []
+        for i in range (1,regions+1):
+            regionColors.append((self.rand.randint(100,255),self.rand.randint(100,255),self.rand.randint(100,255)))
         for i in range(self.height):
             for j in range(self.width):
                 pygame.draw.rect(self.surf,(10,max(0,min(40*self.heightGrid[i][j],255)),200*(self.heightGrid[i][j]<=0)),(j*5,i*5,5,5),0)
+                if self.regionGrid[i][j] > 0:
+                    pygame.draw.rect(self.surf,regionColors[self.regionGrid[i][j]-1],(j*5,i*5,5,5),0)
                 pygame.draw.rect(self.surf,Constants.colors[self.zoneGrid[i][j]],((j+self.width)*5,i*5,5,5),0)
         
         done = False
@@ -89,6 +120,8 @@ class World:
                 self.roomGrid[row][col] = Room(100,20,row,col,self)
         self.currentRoom = self.roomGrid[self.playerCoords[1]][self.playerCoords[0]]
         self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
+
+        
 
     def countWater(self,row,col):
         checkPos = [(row-1,col),(row+1,col),(row,col-1),(row,col+1)]
