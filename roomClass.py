@@ -83,7 +83,7 @@ class Room():
     
         
     
-    def __init__ (self,width,height,zone):
+    def __init__ (self,width,height,row,col,world):
         self.seed = 10234789
         self.grid = []
         self.blockWidth = 32
@@ -95,17 +95,15 @@ class Room():
         self.height = height*self.blockWidth
         self.rows = height
         self.cols = width
-        if zone == Constants.beach:
-            self.generateSand()
-        elif zone == Constants.cliffs:
-            self.generateCliffs()
-        else:
-            self.generateGrass()
+        self.row = row
+        self.col = col
+        self.zone = world.zoneGrid[row][col]
+        self.generateBlocks(self.zone,world,row,col)
 
         self.bgHeights = None
         self.bgZones = None
         self.heightAboveWater = 1
-        self.zone = 1
+        
 
         
 
@@ -119,7 +117,7 @@ class Room():
         endCol = min(int(rectangle[0] + rectangle[2]-1 + xdisp)//self.blockWidth + 1 ,len(self.grid[0]))
         for i in range(startRow,endRow):
             for j in range(startCol,endCol):
-                if self.grid[i][j]:
+                if self.grid[i][j] > 0:
                     return False 
         return True
     
@@ -217,23 +215,29 @@ class Room():
         for row in range(max(0,startRow),min(startRow+cameraHeight//self.blockWidth + 2,len(self.grid))):
             gridRow = self.grid[row]
             for col in range(max(0,startCol),min(startCol+cameraWidth//self.blockWidth + 2,len(self.grid[0]))):
-                if gridRow[col]:
-                    color = Constants.colors[self.zone]
+                if gridRow[col] != -1:
+                    color = Constants.colors[gridRow[col]]
                     pygame.draw.rect(display, color, (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 0)
                     #pygame.draw.rect(display, (0,0,0), (col*self.blockWidth-cameraX,row*self.blockWidth-cameraY, self.blockWidth, self.blockWidth), 1)
 
 
     def drawPathFg(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
         #Drawing path fg
-        xx = 3*self.width/4 - 200 - cameraX
-        yy = self.height - 400 +250 - cameraY
-        display.blit(Room.pathImage,(xx,yy))
+        if world.playerCoords[1] < world.height - 1:
+            z = world.zoneGrid[world.playerCoords[1]+1][world.playerCoords[0]]
+            if z != Constants.cliffs and z != Constants.water:
+                xx = 3*self.width/4 - 200 - cameraX
+                yy = self.height - 400 + 250 - cameraY
+                display.blit(Room.pathImage,(xx,yy))
 
     def drawPathBg(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
         #Drawing path bg
-        xx = self.width/4 - 200 - cameraX
-        yy = self.height - 400 +200 - cameraY
-        display.blit(Room.pathImage,(xx,yy))
+        if world.playerCoords[1] > 0:
+            z = world.zoneGrid[world.playerCoords[1]-1][world.playerCoords[0]]
+            if z != Constants.cliffs and z != Constants.water:
+                xx = self.width/4 - 200 - cameraX
+                yy = self.height - 400 +200 - cameraY
+                display.blit(Room.pathImage,(xx,yy))
 
 
 
@@ -243,7 +247,7 @@ class Room():
         hi = 4
         sandHeight = 3
         for row in range(self.rows):
-            self.grid.append([0]*self.cols)
+            self.grid.append([-1]*self.cols)
         for x in range(self.cols):
             if random.random()<0.1:
                 downchance = (sandHeight-lo)/(hi-lo)
@@ -252,15 +256,14 @@ class Room():
                 else:
                     sandHeight+=1
             for y in range(self.rows):
-                self.grid[y][x] = 1*(self.rows-1-y<sandHeight)
-
+                self.grid[y][x] = Constants.beach if self.rows-1-y<sandHeight else -1
 
     def generateGrass(self):
-        lo = 6
-        hi = 12
+        lo = 2
+        hi = 6
         grassHeight = 8
         for row in range(self.rows):
-            self.grid.append([0]*self.cols)
+            self.grid.append([-1]*self.cols)
         for x in range(self.cols):
             if random.random()<0.2:
                 downchance = (grassHeight-lo)/(hi-lo)
@@ -269,19 +272,71 @@ class Room():
                 else:
                     grassHeight+=1
             for y in range(self.rows):
-                self.grid[y][x] = 1*(self.rows-1-y<grassHeight)
+                self.grid[y][x] = Constants.plains if self.rows-1-y<grassHeight else -1
+
+    def generateWoods(self):
+        lo = 2
+        hi = 5
+        grassHeight = 8
+        for row in range(self.rows):
+            self.grid.append([-1]*self.cols)
+        for x in range(self.cols):
+            if random.random()<0.2:
+                downchance = (grassHeight-lo)/(hi-lo)
+                if random.random() < downchance:
+                    grassHeight-=1
+                else:
+                    grassHeight+=1
+            for y in range(self.rows):
+                self.grid[y][x] = Constants.woods if self.rows-1-y<grassHeight else -1
 
     def generateCliffs(self):
-        lo = 6
-        hi = 16
+        lo = 3
+        hi = 10
         groundHeight = 10
         for row in range(self.rows):
-            self.grid.append([0]*self.cols)
+            self.grid.append([-1]*self.cols)
         for x in range(self.cols):
             if random.random()<0.5:
                 groundHeight += random.randint(max(lo-groundHeight, -4),0) + random.randint(0,min(hi-groundHeight, 4))
             for y in range(self.rows):
-                self.grid[y][x] = 1*(self.rows-1-y<groundHeight)
+                self.grid[y][x] = Constants.cliffs*(self.rows-1-y<groundHeight)
+
+    def generateBlocks(self,type,world,row,col): 
+        lo = 2
+        hi = 4
+        blockHeight = 3
+        for i in range(self.rows):
+            self.grid.append([-1]*self.cols)
+        for x in range(self.cols):
+            if random.random()<0.1:
+                downchance = (blockHeight-lo)/(hi-lo)
+                if random.random() < downchance:
+                    blockHeight-=1
+                else:
+                    blockHeight+=1
+            for y in range(self.rows):
+                self.grid[y][x] = type if self.rows-1-y<blockHeight else -1
+
+        if (world.zoneGrid[row][col] != type):
+            print("woops")
+            print("type: "+str(type))
+            print("self.zone: "+str(self.zone))
+            print("world.zoneGrid[row][col]:" + str(world.zoneGrid[row][col]))
+            print("row: "+str(row)+" col: "+str(col))
+            print("self.row: "+str(self.row)+" col: "+str(self.col))
+
+        if col < world.width - 1 and world.zoneGrid[row][col+1] == Constants.cliffs and type != Constants.cliffs:
+            for i in range(self.rows):
+                if self.grid[i][self.cols-1] != -1:
+                    break
+                self.grid[i][self.cols-1] = Constants.cliffs
+
+        if  col > 0 and world.zoneGrid[row][col-1] == Constants.cliffs and type != Constants.cliffs:
+            for i in range(self.rows):
+                if self.grid[i][0] != -1:
+                    break
+                self.grid[i][0] = Constants.cliffs
 
     def updateBackground(self,world,row,col):
         cellZones = []

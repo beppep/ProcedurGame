@@ -16,7 +16,7 @@ pygame.display.set_caption("Yo Game")
 player = Player()
 
 worldSize = 50
-world = World(worldSize,worldSize)
+world = World(worldSize,worldSize,seed = 5)
 pressed = pygame.key.get_pressed()
 jumpOut = False
 camera = [0,0]
