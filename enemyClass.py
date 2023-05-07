@@ -11,8 +11,8 @@ class Enemy(Entity):
         preset = {}
         preset["name"] = "Enemy "+str(i)
         preset["maxHealth"] = random.randint(1,random.randint(1,5))
-        preset["gravity"] = random.random() * (random.random()>0.5)
-        preset["speed"] = random.random() * (random.random()>0.5)
+        preset["gravity"] = random.random() * (random.random()<0.7)
+        preset["speed"] = random.random() * (random.random()<0.9)
         presets.append(preset)
 
 
@@ -28,10 +28,18 @@ class Enemy(Entity):
         self.speed = preset["speed"]
         self.friction = 0.95
         self.jumpspeed = (self.gravity)**0.5 * 16
-        self.image = pygame.image.load("res/onding.png")
+        self.image = pygame.image.load("res/enemies/onding.png")
         self.image.set_colorkey((255,0,255))
+        self.dead = False
+
+    def hurt(self, dmg):
+        self.health -= dmg
+        if self.health < 0:
+            self.dead = True
 
     def update(self,world, player):
+        if self.dead:
+            return
 
         dirX = player.x - self.x
         dirY = player.y - self.y

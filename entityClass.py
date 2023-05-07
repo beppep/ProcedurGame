@@ -41,6 +41,15 @@ class Entity:
         self.x += self.xv
         self.y += self.yv
 
+    def checkCollision(self,other, selfHitbox=None):
+        if selfHitbox == None:
+            selfHitbox = self.mask
+        selfLeft, selfTop = self.x+selfHitbox[0], self.y+selfHitbox[1]
+        otherLeft, otherTop = other.x+other.mask[0], other.y+other.mask[1]
+        if selfLeft<otherLeft+other.mask[2] and selfLeft+selfHitbox[2]>otherLeft:
+            if selfTop<otherTop+other.mask[3] and selfTop+selfHitbox[3]>otherTop:
+                return True
+
     def draw(self,display,cameraX,cameraY):
         display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
             

@@ -42,6 +42,8 @@ class Player(Entity):
             self.yv += self.gravity
         elif pressed[pygame.K_SPACE] and self.yv >= 0:
             self.yv = -self.jumpspeed
+
+        self.weapon.update(pressed,world)
         
         super().update(world)
 

@@ -63,11 +63,19 @@ while jumpOut == False:
     player.update(pressed,world)
     for enemy in world.currentRoom.enemies:
         enemy.update(world, player)
+    remainingProjs = []
+    for proj in world.currentRoom.projectiles:
+        destroy = proj.update(world, player)
+        if not destroy:
+            remainingProjs.append(proj)
+    world.currentRoom.projectiles = remainingProjs
     gameDisplay.fill((180,200,250))
     world.currentRoom.drawBackground(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathBg(gameDisplay,camera[0],camera[1],1000,600,world)
     for enemy in world.currentRoom.enemies:
         enemy.draw(gameDisplay,camera[0],camera[1])
+    for proj in world.currentRoom.projectiles:
+        proj.draw(gameDisplay,camera[0],camera[1])
     player.draw(gameDisplay,camera[0],camera[1])
     world.currentRoom.drawBlocks(gameDisplay,camera[0],camera[1],1000,600,world)
     world.currentRoom.drawPathFg(gameDisplay,camera[0],camera[1],1000,600,world)
