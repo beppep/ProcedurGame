@@ -3,6 +3,7 @@ import random
 from roomClass import Room
 from entityClass import Entity
 from weaponClass import Weapon
+from constants import Constants
 
 class Player(Entity):
 
@@ -10,16 +11,15 @@ class Player(Entity):
         super().__init__()
         self.x = 100
         self.y = 100
-        self.mask = pygame.Rect(-16,-32,32,64)
+        self.mask = pygame.Rect(-32,-32,64,64)
+        self.hitbox = pygame.Rect(-16,-32,32,64)
         self.moveDir = 0
-        self.turnDir = 1
         self.xSpeed = 0.5 + 0.5*random.random()
         self.xFriction = 0.9 + 0.05*random.random()
         self.gravity = 0.3+0.5*random.random()
         self.jumpspeed = (self.gravity)**0.5 * 16
         self.prevPressed = []
-        self.image = pygame.image.load("res/hej.png")
-        self.image.set_colorkey((255,0,255))
+        self.image = Constants.loadImageTuple("res/hej.png")
         self.maxHealth = random.randint(4,5)
         self.health = self.maxHealth
         self.weapon = Weapon(self)
@@ -38,7 +38,7 @@ class Player(Entity):
         self.xv += self.moveDir*self.xSpeed
         self.xv *= self.xFriction
 
-        if world.currentRoom.checkFree(self.mask,self.x,self.y+1):
+        if world.currentRoom.checkFree(self.hitbox,self.x,self.y+1):
             self.yv += self.gravity
         elif pressed[pygame.K_SPACE] and self.yv >= 0:
             self.yv = -self.jumpspeed
@@ -78,7 +78,7 @@ class Player(Entity):
                 
 
     def draw(self,display,cameraX,cameraY):
-        display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
+        display.blit(self.image[self.turnDir],(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
         if self.weapon:
             self.weapon.draw(display,cameraX,cameraY)
             

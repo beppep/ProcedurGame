@@ -2,6 +2,7 @@ import pygame
 import random
 from roomClass import Room
 from entityClass import Entity
+from constants import Constants
 
 class Enemy(Entity):
 
@@ -12,7 +13,7 @@ class Enemy(Entity):
         preset["name"] = "Enemy "+str(i)
         preset["maxHealth"] = random.randint(1,random.randint(1,5))
         preset["gravity"] = random.random() * (random.random()<0.7)
-        preset["speed"] = random.random() * (random.random()<0.9)
+        preset["speed"] = 0.5*random.random()
         presets.append(preset)
 
 
@@ -21,19 +22,19 @@ class Enemy(Entity):
         self.x = x
         self.y = y
         self.mask = pygame.Rect(-16,-32,32,64)
-        self.turnDir = 1
         self.maxHealth = preset["maxHealth"]
         self.health = self.maxHealth
         self.gravity = preset["gravity"]
         self.speed = preset["speed"]
         self.friction = 0.95
         self.jumpspeed = (self.gravity)**0.5 * 16
-        self.image = pygame.image.load("res/enemies/onding.png")
-        self.image.set_colorkey((255,0,255))
+        self.image = Constants.loadImageTuple("res/enemies/onding.png")
         self.dead = False
 
-    def hurt(self, dmg):
+    def hurt(self, dmg, knockback=0):
         self.health -= dmg
+        self.yv -= abs(knockback)*0.5
+        self.xv += knockback
         if self.health < 0:
             self.dead = True
 
@@ -67,5 +68,5 @@ class Enemy(Entity):
         
 
     def draw(self,display,cameraX,cameraY):
-        display.blit(self.image,(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
+        display.blit(self.image[self.turnDir],(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
             
