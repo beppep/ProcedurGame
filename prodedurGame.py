@@ -63,6 +63,7 @@ while jumpOut == False:
     player.update(pressed,world)
     for enemy in world.currentRoom.enemies:
         enemy.update(world, player)
+    world.currentRoom.enemies = list(filter((lambda x: not x.dead), world.currentRoom.enemies))
     remainingProjs = []
     for proj in world.currentRoom.projectiles:
         destroy = proj.update(world, player)

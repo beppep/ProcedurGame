@@ -104,6 +104,7 @@ class Room():
         self.bgZones = None
         self.heightAboveWater = 1
         self.enemies = []
+        #self.generateEnemies(self.zone,world,row,col) # circular import asså aaaaaaaaaaaa
         self.projectiles = []
 
     
@@ -301,7 +302,7 @@ class Room():
 
     def generateBlocks(self,type,world,row,col): 
         lo = 2
-        hi = 4
+        hi = 5
         blockHeight = 3
         for i in range(self.rows):
             self.grid.append([-1]*self.cols)
@@ -354,6 +355,10 @@ class Room():
                     for ii in range(i,self.rows):
                         if self.grid[ii][self.cols-1-j] == -1 or ii == i:
                             self.grid[ii][self.cols-1-j] = Constants.water if i > self.rows-hi -1 else -1
+
+    def generateEnemies(self,type,world,row,col): 
+        for i in range(random.randint(0,20)):
+            self.enemies.append(Enemy(random.randint(100,self.width-100),100,random.choice(Enemy.presets)))
 
     def updateBackground(self,world,row,col):
         cellZones = []
