@@ -6,7 +6,7 @@ from constants import Constants
 
 class Enemy(Entity):
 
-    imagePaths = ["res/enemies/onding.png","res/enemies/enemy2.png","res/enemies/hej.png"]
+    imagePaths = ["res/enemies/onding.png","res/enemies/enemy2.png","res/enemies/hej.png","res/enemies/wizard.png"]
     images = []
     for pth in imagePaths:
         images.append(Constants.loadImageTuple(pth))
@@ -33,14 +33,14 @@ class Enemy(Entity):
         self.health = self.maxHealth
         self.gravity = preset["gravity"]
         self.speed = preset["speed"]
-        self.friction = 0.97
+        self.friction = 0.9
         self.jumpspeed = (self.gravity)**0.5 * 16
         self.imageNumber = preset["imageNumber"]
         self.dead = False
 
     def hurt(self, dmg, knockback=0):
         self.health -= dmg
-        self.yv -= abs(knockback)*0.5
+        self.yv = - abs(knockback)*0.3
         self.xv += knockback
         if self.health < 0:
             self.dead = True

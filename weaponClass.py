@@ -10,7 +10,7 @@ class Weapon():
         self.image = Constants.loadImageTuple("res/weapons/cannon.png")
         self.mask = pygame.Rect(-32,-32,64,64)
         self.player = player
-        self.cooldown = 30
+        self.cooldown = 20 + 30*random.random()
         self.cooldownTimer = 0
 
         self.projType = random.randint(0,9)
@@ -25,6 +25,7 @@ class Weapon():
 
     def attack(self,world):
         world.currentRoom.projectiles.append(Projectile(self.player, Projectile.presets[self.projType]))
+        #self.projType = random.randint(0,9)
         #print(world.currentRoom.projectiles)
 
     def draw(self,display,cameraX,cameraY):
