@@ -6,7 +6,7 @@ from roomClass import Room
 
 class World:
     
-    def __init__(self,width,height,seed = None):
+    def __init__(self,width,height,Enemy, seed = None):
         self.rand = random.Random()
         if seed != None:
             self.rand.seed(seed)
@@ -117,7 +117,7 @@ class World:
         for row in range(height):
             self.roomGrid.append([0]*width)
             for col in range(width):
-                self.roomGrid[row][col] = Room(100,20,row,col,self)
+                self.roomGrid[row][col] = Room(100,20,row,col,self, Enemy)
         self.currentRoom = self.roomGrid[self.playerCoords[1]][self.playerCoords[0]]
         self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
 
@@ -142,6 +142,7 @@ class World:
             return False
         self.playerCoords=(newCol,newRow)
         self.currentRoom = self.roomGrid[newRow][newCol]
+        self.currentRoom.updateBackground(self,self.playerCoords[1],self.playerCoords[0])
         print("Room row: "+str(self.currentRoom.row))
         print("Room col: "+str(self.currentRoom.col))
         print("Left zone: "+str(self.zoneGrid[self.currentRoom.row][self.currentRoom.col-1]))

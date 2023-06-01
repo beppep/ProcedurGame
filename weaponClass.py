@@ -10,15 +10,16 @@ class Weapon():
         self.image = Constants.loadImageTuple("res/weapons/cannon.png")
         self.mask = pygame.Rect(-32,-32,64,64)
         self.player = player
-        self.cooldown = 20 + 30*random.random()
-        self.cooldownTimer = 0
-
         self.projType = random.randint(0,9)
+        self.cooldown = 3+3*int(Projectile.presets[self.projType]["powerLevel"])
+        self.cooldownTimer = 30
+
 
     def update(self,pressed,world):
         if self.cooldownTimer>0:
             self.cooldownTimer -= 1
         else:
+            self.cooldownTimer = 0
             if pressed[pygame.K_f]:
                 self.attack(world)
                 self.cooldownTimer = self.cooldown
@@ -29,5 +30,7 @@ class Weapon():
         #print(world.currentRoom.projectiles)
 
     def draw(self,display,cameraX,cameraY):
-        pos = (self.player.x-self.mask[2]/2-cameraX + 16*self.player.turnDir, self.player.y-self.mask[3]/2-cameraY) #+30 is temporary
+        offsetX = 16 - 32*self.player.shielding
+        offsetY = 16*self.player.shielding
+        pos = (self.player.x+self.mask[0]-cameraX + offsetX*self.player.turnDir, offsetY + self.player.y+self.mask[1]-cameraY) #+30 is temporary
         display.blit(self.image[self.player.turnDir], pos)

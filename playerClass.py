@@ -7,6 +7,8 @@ from constants import Constants
 
 class Player(Entity):
 
+    ISPLAYER = True
+
     def __init__(self):
         super().__init__()
         self.x = 100
@@ -15,14 +17,27 @@ class Player(Entity):
         self.hitbox = pygame.Rect(-16,-32,32,64)
         self.moveDir = 0
         self.xSpeed = 0.5 + 0.5*random.random()
-        self.xFriction = 0.9 + 0.05*random.random()
+        self.xFriction = 0.8 + 0.1*random.random()
         self.gravity = 0.3+0.5*random.random()
         self.jumpspeed = (self.gravity)**0.5 * 16
         self.prevPressed = []
         self.image = Constants.loadImageTuple("res/hej.png")
-        self.maxHealth = random.randint(4,5)
+        self.shieldImage = Constants.loadImageTuple("res/weapons/shield.png")
+        self.maxHealth = random.randint(8,10)
         self.health = self.maxHealth
         self.weapon = Weapon(self)
+        self.shield = True
+        self.shielding = False
+
+    def hurt(self, dmg, knockback=0):
+        if self.shielding:
+            return False
+        else:
+            self.health -= dmg
+            self.yv = - abs(knockback)*0.3
+            self.xv += knockback
+            if self.health <= 0:
+                self.dead = True
 
     def update(self,pressed,world):
         if len (self.prevPressed) > 0:
@@ -43,6 +58,11 @@ class Player(Entity):
         elif pressed[pygame.K_SPACE] and self.yv >= 0:
             self.yv = -self.jumpspeed
 
+        if pressed[pygame.K_g] and not self.weapon.cooldownTimer>0:
+            self.shielding = True
+        else:
+            self.shielding = False
+
         self.weapon.update(pressed,world)
         
         super().update(world)
@@ -50,7 +70,6 @@ class Player(Entity):
         if self.x<0:
             success = world.tryMovePlayer(-1,0)
             if success:
-                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x = world.currentRoom.width
                 self.y = 100
             else:
@@ -58,7 +77,6 @@ class Player(Entity):
         if self.x>world.currentRoom.width:
             success = world.tryMovePlayer(1,0)
             if success:
-                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x = 0
                 self.y = 100
             else:
@@ -66,19 +84,25 @@ class Player(Entity):
                 
         if abs(self.x - world.currentRoom.width/4) < 30 and pressed[pygame.K_UP]:
             if (world.tryMovePlayer(0,-1)):
-                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x += world.currentRoom.width/2
                 self.y -= 96
         elif abs(self.x - 3*world.currentRoom.width/4) < 30 and pressed[pygame.K_DOWN]:
             if (world.tryMovePlayer(0,1)):
-                world.currentRoom.updateBackground(world,world.playerCoords[1],world.playerCoords[0])
                 self.x -= world.currentRoom.width/2
                 self.y -= 96
         
                 
 
     def draw(self,display,cameraX,cameraY):
+        w = 200
+        pygame.draw.rect(display, (255, 0, 0), (20,22,int(w),20), 0)
+        pygame.draw.rect(display, (0, 255, 0), (20,20,int(self.health/self.maxHealth*w),24), 0)
+
         display.blit(self.image[self.turnDir],(self.x+self.mask[0]-cameraX,self.y+self.mask[1]-cameraY))
         if self.weapon:
             self.weapon.draw(display,cameraX,cameraY)
+        if self.shield:
+            offsetX = -16 + 32*self.shielding
+            offsetY = 16*(not self.shielding)
+            display.blit(self.shieldImage[self.turnDir],(self.x+self.mask[0]-cameraX + self.turnDir*offsetX, offsetY + self.y+self.mask[1]-cameraY))
             

@@ -83,7 +83,7 @@ class Room():
     
         
     
-    def __init__ (self,width,height,row,col,world):
+    def __init__ (self,width,height,row,col,world, Enemy):
         self.seed = 10234789
         self.grid = []
         self.blockWidth = 32
@@ -104,7 +104,7 @@ class Room():
         self.bgZones = None
         self.heightAboveWater = 1
         self.enemies = []
-        #self.generateEnemies(self.zone,world,row,col) # circular import asså aaaaaaaaaaaa
+        self.generateEnemies(self.zone,world,row,col, Enemy)
         self.projectiles = []
 
     
@@ -124,7 +124,10 @@ class Room():
         col = int(x//self.blockWidth)
         if row < 0 or row >= len(self.grid) or col < 0 or col >= len(self.grid[0]):
             return
-        self.grid[row][col] = not self.grid[row][col]
+        if self.grid[row][col] == 1:
+            self.grid[row][col] = 0
+        else:
+            self.grid[row][col] = 1
 
 
     def drawBackground(self,display:pygame.Surface,cameraX,cameraY,cameraWidth,cameraHeight,world):
@@ -356,8 +359,8 @@ class Room():
                         if self.grid[ii][self.cols-1-j] == -1 or ii == i:
                             self.grid[ii][self.cols-1-j] = Constants.water if i > self.rows-hi -1 else -1
 
-    def generateEnemies(self,type,world,row,col): 
-        for i in range(random.randint(0,20)):
+    def generateEnemies(self,type,world,row,col, Enemy): 
+        for i in range(random.randint(0,5)):
             self.enemies.append(Enemy(random.randint(100,self.width-100),100,random.choice(Enemy.presets)))
 
     def updateBackground(self,world,row,col):
