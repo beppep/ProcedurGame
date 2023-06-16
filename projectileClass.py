@@ -27,6 +27,7 @@ class Projectile(Entity):
         preset["powerLevel"] = preset["damage"]*(preset["knockback"]+preset["speed"])
         #print(preset["powerLevel"]) # about 0 - 20
         presets.append(preset)
+    presets.sort(key = lambda x:x["powerLevel"])
 
     def __init__(self, owner, preset):
         super().__init__()

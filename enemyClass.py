@@ -22,8 +22,19 @@ class Enemy(Entity):
         preset["speed"] = 0.5*random.random()
         preset["imageNumber"] = random.randint(0,len(images)-1)
         preset["projType"] = random.randint(0,9)
-        presets.append(preset)
+        preset["morphs"] = (random.random()<0.5) # as opposed to summoner
 
+        preset["powerLevel"] = preset["maxHealth"]*(preset["speed"]+Projectile.presets[preset["projType"]]["powerLevel"])
+        print(preset["powerLevel"]) # about 3 - 100
+        presets.append(preset)
+    presets.sort(key = lambda x:x["powerLevel"])
+    for p in range(len(presets)):
+        if p>0:
+            presets[p]["summonType"] = random.randint(0,9)
+            while presets[p]["summonType"] >= p and presets[presets[p]["summonType"]]["morphs"]==False: # can morph into morphs powercreatures or lower level creatures
+                presets[p]["summonType"] = random.randint(0,9)
+        else:
+            presets[p]["summonType"] = -1
 
     def __init__(self,x,y,preset): # create enemy instance from preset
         super().__init__()
@@ -63,6 +74,14 @@ class Enemy(Entity):
             if random.random()<0.01:
                 self.attack(world)
                 self.cooldownTimer = self.cooldown
+
+            elif random.random()<0.002 and len(world.currentRoom.enemies)<20 and self.preset["summonType"]>=0:
+                self.dead = self.preset["morphs"]
+                newEnemy = Enemy(self.x, self.y, self.presets[self.preset["summonType"]])
+                if self.preset["morphs"]:
+                    newEnemy.health = (self.health/self.maxHealth)*newEnemy.maxHealth
+                world.currentRoom.enemies.append(newEnemy)
+
 
         dirX = player.x - self.x
         dirY = player.y - self.y

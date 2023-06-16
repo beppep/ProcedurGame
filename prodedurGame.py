@@ -9,7 +9,7 @@ from roomClass import Room
 from playerClass import Player
 from enemyClass import Enemy
 from betterWorldClass import World
-clock = pygame.time.Clock()
+clock = pygame.time.Clock() 
 
 
 pygame.display.set_caption("Yo Game")
