@@ -28,6 +28,8 @@ class Player(Entity):
         self.weapon = Weapon(self)
         self.shield = True
         self.shielding = False
+        self.dashes = 0
+        self.dashTime = 0
 
     def hurt(self, dmg, knockback=0):
         if self.shielding:
@@ -40,31 +42,47 @@ class Player(Entity):
                 self.dead = True
 
     def update(self,pressed,world):
-        if len (self.prevPressed) > 0:
-            if pressed[pygame.K_RIGHT] and (not pressed[pygame.K_LEFT] or not self.prevPressed[pygame.K_RIGHT]):
-                self.moveDir = 1
-                self.turnDir = 1
-            if pressed[pygame.K_LEFT] and (not pressed[pygame.K_RIGHT] or not self.prevPressed[pygame.K_LEFT]):
-                self.moveDir = -1
-                self.turnDir = -1
-            if not pressed[pygame.K_RIGHT] and not pressed[pygame.K_LEFT]:
-                self.moveDir = 0
-        self.prevPressed = pressed
-        self.xv += self.moveDir*self.xSpeed
-        self.xv *= self.xFriction
-
-        if world.currentRoom.checkFree(self.hitbox,self.x,self.y+1):
-            self.yv += self.gravity
-        elif pressed[pygame.K_SPACE] and self.yv >= 0:
-            self.yv = -self.jumpspeed
-
-        if pressed[pygame.K_g] and not self.weapon.cooldownTimer>0:
-            self.shielding = True
+        if self.dashTime>0:
+            self.dashTime -= 1
+            if self.dashTime<=0:
+                self.xv *= 0.5
+                self.yv *= 0.2
         else:
-            self.shielding = False
+            if len (self.prevPressed) > 0:
+                if pressed[pygame.K_RIGHT] and (not pressed[pygame.K_LEFT] or not self.prevPressed[pygame.K_RIGHT]):
+                    self.moveDir = 1
+                    self.turnDir = 1
+                if pressed[pygame.K_LEFT] and (not pressed[pygame.K_RIGHT] or not self.prevPressed[pygame.K_LEFT]):
+                    self.moveDir = -1
+                    self.turnDir = -1
+                if not pressed[pygame.K_RIGHT] and not pressed[pygame.K_LEFT]:
+                    self.moveDir = 0
+            self.prevPressed = pressed
+            self.xv += self.moveDir*self.xSpeed
+            self.xv *= self.xFriction
+
+            if world.currentRoom.checkFree(self.hitbox,self.x,self.y+1):
+                self.yv += self.gravity
+            else:
+                self.dashes = 1
+                if pressed[pygame.K_SPACE] and self.yv >= 0:
+                    self.yv = -self.jumpspeed
+
+            if pressed[pygame.K_LSHIFT] and self.dashes>0:
+                dx = pressed[pygame.K_RIGHT] - pressed[pygame.K_LEFT]
+                dy = pressed[pygame.K_DOWN] - pressed[pygame.K_UP]
+                if dx != 0 or dy != 0:
+                    self.dashes = 0
+                    self.xv = dx * 20
+                    self.yv = dy * 20
+                    self.dashTime = 10
+            if pressed[pygame.K_g] and not self.weapon.cooldownTimer>0:
+                self.shielding = True
+            else:
+                self.shielding = False
 
         self.weapon.update(pressed,world)
-        
+            
         super().update(world)
 
         if self.x<0:

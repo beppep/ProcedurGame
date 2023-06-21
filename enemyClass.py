@@ -81,6 +81,7 @@ class Enemy(Entity):
                 if self.preset["morphs"]:
                     newEnemy.health = (self.health/self.maxHealth)*newEnemy.maxHealth
                 world.currentRoom.enemies.append(newEnemy)
+                self.cooldownTimer = self.cooldown*2
 
 
         dirX = player.x - self.x

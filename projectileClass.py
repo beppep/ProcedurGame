@@ -59,7 +59,7 @@ class Projectile(Entity):
 
         if self.evil:
             collision = self.checkCollision(player, selfHitbox = self.hitbox)
-            if collision:
+            if collision and not player.dashTime>0:
                 player.hurt(self.damage, self.knockback*self.turnDir)
                 dead = True
         else:
